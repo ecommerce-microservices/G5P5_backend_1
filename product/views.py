@@ -11,6 +11,9 @@ class ProductAPIView(views.APIView):
         products = Product.objects.all().order_by('id')
         products_serializer = ProductSerializer(products, many=True)
         
+        if not products_serializer.data:
+            return Response({"message":"La lista de productos se encuentra vacía"}, status=status.HTTP_404_NOT_FOUND)
+        
         return Response(products_serializer.data, status=status.HTTP_200_OK)
         
     def post(self, request, *args, **kwargs):
@@ -19,7 +22,7 @@ class ProductAPIView(views.APIView):
         
         if product_serializer.is_valid(raise_exception=True):
             product_serializer.save()
-            return Response({"message":"Se guardó el producto"}, status=status.HTTP_201_CREATED)
+            return Response({"message":"El producto se agregó exitosamente"}, status=status.HTTP_201_CREATED)
         #return Response({"message":"Petición incorrecta"}, status= status.HTTP_400_BAD_REQUEST)
         
 class ProductDetailAPIView(views.APIView):
@@ -33,7 +36,7 @@ class ProductDetailAPIView(views.APIView):
         
             if product_serializer.is_valid(raise_exception=True):
                 product_serializer.save()
-                return Response({'message': 'Se actualizó el producto'}, status=status. HTTP_200_OK)
+                return Response({'message': 'El producto se actualizó exitosamente'}, status=status. HTTP_200_OK)
                 
             #return Response({'message': 'No se pudo actualizar el producto'}, status=status. HTTP_200_OK)
                                 
@@ -45,6 +48,6 @@ class ProductDetailAPIView(views.APIView):
         if product.exists():
             product = product.first()
             product.delete()
-            return Response({'message': 'Se eleminó el producto'}, status=status.HTTP_200_OK)
+            return Response({'message': 'El producto se eliminó exitosamente'}, status=status.HTTP_200_OK)
         
         return Response({'message':'No se econtró el producto'}, status=status.HTTP_404_NOT_FOUND)
